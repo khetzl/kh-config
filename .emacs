@@ -16,19 +16,10 @@
 ;; spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 
-;; EQC Emacs Mode -- Configuration Start
-(add-to-list 'load-path "/usr/local/lib/erlang/lib/eqc-1.27.7/emacs/")
-(autoload 'eqc-erlang-mode-hook "eqc-ext" "EQC Mode" t)
-(add-hook 'erlang-mode-hook 'eqc-erlang-mode-hook)
-(setq eqc-max-menu-length 30)
-(setq eqc-root-dir "/usr/local/lib/erlang/lib/eqc-1.27.7")
-;; EQC Emacs Mode -- Configuration End
-
-
-(add-to-list 'load-path  "/usr/local/lib/erlang/lib/tools-2.6.13/emacs")
-      (setq erlang-root-dir "/usr/local/lib/erlang")
-      (setq exec-path (cons "/usr/local/lib/erlang/bin" exec-path))
-      (setq erlang-man-root-dir "/usr/local/lib/erlang/man")
+(add-to-list 'load-path  "/Users/kristofhetzl/erlang_installations/21_3/lib/tools-3.1/emacs")
+      (setq erlang-root-dir "/Users/kristofhetzl/erlang_installations/21_3/")
+      (setq exec-path (cons "/Users/kristofhetzl/erlang_installations/21_3/bin" exec-path))
+      (setq erlang-man-root-dir "/Users/kristofhetzl/erlang_installations/21_3/man")
       (require 'erlang-start)
 
 (add-to-list 'auto-mode-alist '("\\.eterm?$" . erlang-mode))
@@ -36,11 +27,11 @@
 (add-to-list 'auto-mode-alist '("\\.escript?$" . erlang-mode))
 (add-to-list 'auto-mode-alist '("\\.hrl?$" . erlang-mode))
 
-(add-to-list 'load-path "~/.emacs.d/share/distel/share/distel/elisp")
-      (require 'distel)
-      (distel-setup)
+;;(add-to-list 'load-path "~/.emacs.d/share/distel/share/distel/elisp")
+;;      (require 'distel)
+;;      (distel-setup)
 
-(global-set-key (kbd "<home>") 'beginning-of-line)              
+(global-set-key (kbd "<home>") 'beginning-of-line)
 (global-set-key (kbd "<end>") 'end-of-line)
 
 (defun cj-quick-io-format ()
@@ -83,7 +74,9 @@
   "Additional keys to bind when in Erlang shell.")
 
 (add-hook 'erlang-shell-mode-hook
-                                        (lambda ()
-                                                ;; add some Distel bindings to the Erlang shell
-                                                (dolist (spec distel-shell-keys)
-                                                        (define-key erlang-shell-mode-map (car spec) (cadr spec)))))
+          (lambda ()
+            ;; add some Distel bindings to the Erlang shell
+            (dolist (spec distel-shell-keys)
+              (define-key erlang-shell-mode-map (car spec) (cadr spec)))))
+
+(load-theme 'misterioso)
