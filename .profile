@@ -1,8 +1,15 @@
-
-# MacPorts Installer addition on 2013-02-07_at_11:39:30: adding an appropriate PATH variable for use with MacPorts.
-export PATH=/opt/local/bin:/opt/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
-# Finished adapting your PATH environment variable for use with MacPorts.
+export PATH=~/bin:$PATH
 alias ll="ls -al"
-alias make="xcrun make"
-#alias cc="xcrun cc"
+alias realpath="grealpath"
+alias make="gmake"
+
+function run() {
+    number=$1
+    shift
+    for n in $(seq $number); do
+      $@
+    done
+}
+
+. ~/erlang_installations/21_3/activate
