@@ -1,11 +1,17 @@
+;; no startup screen
+(setq inhibit-startup-screen t)?
+
+;; line numbers
+(global-linum-mode t)
+
 ;; frame switch
 (global-set-key "\M-`" 'other-frame)
 
-;;; Turn on column-number-mode
-(column-number-mode 1)
+;; Turn on column-number-mode
+ (column-number-mode 1)
 
-;;; Goto line with M-g
-(global-set-key "\eg" 'goto-line)
+;; Goto line with M-g
+(global-set-key "\M-g" 'goto-line)
 
 ;;; Switch window with M-<space>
 (global-set-key "\M- " 'other-window)
@@ -16,67 +22,59 @@
 ;; spaces instead of tabs
 (setq-default indent-tabs-mode nil)
 
-(add-to-list 'load-path  "/Users/kristofhetzl/erlang_installations/21_3/lib/tools-3.1/emacs")
-      (setq erlang-root-dir "/Users/kristofhetzl/erlang_installations/21_3/")
-      (setq exec-path (cons "/Users/kristofhetzl/erlang_installations/21_3/bin" exec-path))
-      (setq erlang-man-root-dir "/Users/kristofhetzl/erlang_installations/21_3/man")
-      (require 'erlang-start)
-
-(add-to-list 'auto-mode-alist '("\\.eterm?$" . erlang-mode))
-(add-to-list 'auto-mode-alist '("\\.erl?$" . erlang-mode))
-(add-to-list 'auto-mode-alist '("\\.escript?$" . erlang-mode))
-(add-to-list 'auto-mode-alist '("\\.hrl?$" . erlang-mode))
-
-;;(add-to-list 'load-path "~/.emacs.d/share/distel/share/distel/elisp")
-;;      (require 'distel)
-;;      (distel-setup)
+;; No lockfiles
+(setq create-lockfiles nil)
 
 (global-set-key (kbd "<home>") 'beginning-of-line)
 (global-set-key (kbd "<end>") 'end-of-line)
 
-(defun cj-quick-io-format ()
-  (interactive)
-  (save-excursion
-    ;; (newline-and-indent)
-    (insert "io:format(\"~p:~p:~p~n\", [self(), ?MODULE, ?LINE]),")
-  )
-)
-(global-set-key (kbd "C-c C-t") 'cj-quick-io-format)
+;;(global-set-key (kbd "C-c C-c") 'comment-region)
+;;(global-set-key (kbd "C-k C-c C-c") 'uncomment-region) ;; This is default
 
-(defun badass-hashmark ()
-  (interactive)
-  (save-excursion
-    (insert "#")
-  )
-)
-(global-set-key (kbd "M-3") 'badass-hashmark)
+;; OSX hashmark
+(define-key key-translation-map (kbd "M-3") (kbd "#"))
 
+;; my theme
+(load-theme 'misterioso t)
 
+;; github rust magic
+;; keep my personal settings not in the .emacs file
+;; http://www.mygooglest.com/fni/dot-emacs.html
+;; load it if it exists
+;;(let ((personal-settings "~/emacs-rust-config/standalone.el"))
+;; (when (file-exists-p personal-settings)
+;;   (load-file personal-settings))
+;;)
 
+(setq user-init-file (or load-file-name (buffer-file-name)))
+(setq user-emacs-directory (file-name-directory user-init-file))
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
-(defun my-erlang-mode-hook ()
-        (setq inferior-erlang-machine-options '("-sname" "emacs"))
-        (imenu-add-to-menubar "imenu")
-        (local-set-key [return] 'newline-and-indent)
-)
+(require 'package)
+(add-to-list 'package-archives '("tromey" . "http://tromey.com/elpa/"))
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(setq package-user-dir (expand-file-name "elpa/" user-emacs-directory))
+(package-initialize)
 
-(add-hook 'erlang-mode-hook 'my-erlang-mode-hook)
+;; Install use-package that we require for managing all other dependencies
 
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
-;; A number of the erlang-extended-mode key bindings are useful in the shell too
-(defconst distel-shell-keys
-  '(("\C-\M-i"   erl-complete)
-    ("\M-?"      erl-complete)
-    ("\M-."      erl-find-source-under-point)
-    ("\M-,"      erl-find-source-unwind)
-    ("\M-*"      erl-find-source-unwind)
-    )
-  "Additional keys to bind when in Erlang shell.")
+;; I find these light-weight and helpful
 
-(add-hook 'erlang-shell-mode-hook
-          (lambda ()
-            ;; add some Distel bindings to the Erlang shell
-            (dolist (spec distel-shell-keys)
-              (define-key erlang-shell-mode-map (car spec) (cadr spec)))))
+(use-package which-key
+  :ensure
+  :init
+  (which-key-mode))
 
-(load-theme 'misterioso)
+(use-package selectrum
+  :ensure
+  :init
+  (selectrum-mode)
+  :custom
+  (completion-styles '(flex substring partial-completion)))
+
+(load-file (expand-file-name "init.el" user-emacs-directory))
+
