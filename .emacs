@@ -1,10 +1,6 @@
 ;; no startup screen
 (setq inhibit-startup-screen t)?
 
-;; links
-;;(setq vc-handled-backends nil)
-;;(add-to-list 'exec-path "/usr/local/Cellar/direnv/2.28.0/bin")
-
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
 
@@ -47,7 +43,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(exec-path-from-shell toml-mode company yasnippet flycheck lsp-ui lsp-mode rustic selectrum which-key use-package)))
+   '(cargo cider exec-path-from-shell toml-mode company yasnippet flycheck lsp-ui lsp-mode rustic selectrum which-key use-package)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -89,14 +85,7 @@
   (setq lsp-enable-snippet nil)
   (require 'lsp-clients))
 
-;;(use-package lsp-ui)
-(use-package lsp-ui
-  :ensure
-  :commands lsp-ui-mode
-  :custom
-  (lsp-ui-peek-always-show t)
-  (lsp-ui-sideline-show-hover t)
-  (lsp-ui-doc-enable nil))
+(use-package lsp-ui)
 
 (use-package rust-mode
   :hook (rust-mode . lsp))
@@ -106,5 +95,3 @@
 
 (use-package flycheck-rust
   :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-
-(setq rust-format-on-save t)
