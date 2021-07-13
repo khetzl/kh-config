@@ -1,6 +1,13 @@
 ;; no startup screen
 (setq inhibit-startup-screen t)?
 
+;; links
+;;(setq vc-handled-backends nil)
+;;(add-to-list 'exec-path "/usr/local/Cellar/direnv/2.28.0/bin")
+
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+
 ;; line numbers
 (global-linum-mode t)
 
@@ -34,21 +41,19 @@
 ;; OSX hashmark
 (define-key key-translation-map (kbd "M-3") (kbd "#"))
 
-;; my theme
-(load-theme 'misterioso t)
-
-;; github rust magic
-;; keep my personal settings not in the .emacs file
-;; http://www.mygooglest.com/fni/dot-emacs.html
-;; load it if it exists
-;;(let ((personal-settings "~/emacs-rust-config/standalone.el"))
-;; (when (file-exists-p personal-settings)
-;;   (load-file personal-settings))
-;;)
-
-(setq user-init-file (or load-file-name (buffer-file-name)))
-(setq user-emacs-directory (file-name-directory user-init-file))
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(exec-path-from-shell toml-mode company yasnippet flycheck lsp-ui lsp-mode rustic selectrum which-key use-package)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 
 (require 'package)
 (add-to-list 'package-archives '("tromey" . "http://tromey.com/elpa/"))
@@ -56,25 +61,50 @@
 (setq package-user-dir (expand-file-name "elpa/" user-emacs-directory))
 (package-initialize)
 
-;; Install use-package that we require for managing all other dependencies
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; my theme
+;; (load-theme 'misterioso t)
 
-;; I find these light-weight and helpful
-
-(use-package which-key
-  :ensure
+;; lsp
+(use-package direnv
   :init
-  (which-key-mode))
+  (add-hook 'prog-mode-hook #'direnv-update-environment)
+  :config
+  (direnv-mode))
+  
+(use-package flycheck
+  :hook (prog-mode . flycheck-mode))
 
-(use-package selectrum
+(use-package company
+  :hook (prog-mode . company-mode)
+  :config
+  (setq company-tooltip-align-annotations t)
+  (setq company-minimum-prefix-length 1))
+
+(use-package lsp-mode
+  :after (direnv evil)
+  :commands lsp
+  :config
+  (setq lsp-prefer-flymake nil)
+  (setq lsp-enable-snippet nil)
+  (require 'lsp-clients))
+
+;;(use-package lsp-ui)
+(use-package lsp-ui
   :ensure
-  :init
-  (selectrum-mode)
+  :commands lsp-ui-mode
   :custom
-  (completion-styles '(flex substring partial-completion)))
+  (lsp-ui-peek-always-show t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-doc-enable nil))
 
-(load-file (expand-file-name "init.el" user-emacs-directory))
+(use-package rust-mode
+  :hook (rust-mode . lsp))
 
+(use-package cargo
+  :hook (rust-mode . cargo-minor-mode))
+
+(use-package flycheck-rust
+  :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
+(setq rust-format-on-save t)
